@@ -1,0 +1,6 @@
+[package]
+name = "CYFighter-Zesty-Green-Falacious-Refuse"
+version = "0.1.0"
+authors = ["Your Name <victor_bankowski@hotmail.com>"]
+
+[dependencies]
