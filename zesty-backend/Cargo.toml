@@ -1,7 +1,8 @@
 [package]
 name = "zesty-backend"
 version = "0.1.0"
-authors = ["Your Name <victor_bankowski@hotmail.com>"]
+authors = ["Victor \"VoxWave\" Bankowski <victor_bankowski@hotmail.com>"]
 
 [dependencies]
 specs = "0.12"
+specs-derive = "0.2"

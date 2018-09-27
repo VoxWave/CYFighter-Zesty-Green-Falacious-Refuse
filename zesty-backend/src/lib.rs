@@ -1,4 +1,14 @@
 extern crate specs;
+extern crate specs_derive;
+
+use specs::VecStorage;
+
+#[derive(Component, Debug)]
+#[storage(VecStorage)]
+struct Position {
+    x: f32,
+    y: f32,
+}
 
 #[cfg(test)]
 mod tests {
