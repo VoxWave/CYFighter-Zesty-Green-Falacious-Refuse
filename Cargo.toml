@@ -4,3 +4,8 @@ version = "0.1.0"
 authors = ["Your Name <victor_bankowski@hotmail.com>"]
 
 [dependencies]
+piston_window = "0.80"
+zesty-backend = { path = "zesty-backend"}
+
+[workspace]
+members = ["zesty-backend"]
