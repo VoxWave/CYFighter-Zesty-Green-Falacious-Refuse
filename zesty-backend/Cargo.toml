@@ -6,3 +6,4 @@ authors = ["Victor \"VoxWave\" Bankowski <victor_bankowski@hotmail.com>"]
 [dependencies]
 specs = "0.12"
 specs-derive = "0.2"
+nalgebra = "0.16.4"
