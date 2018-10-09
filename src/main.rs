@@ -1,6 +1,12 @@
 extern crate piston_window;
+extern crate nalgebra as na;
+extern crate specs;
+#[macro_use]
+extern crate specs_derive;
 
 use piston_window::*;
+
+mod physics;
 
 fn main() {
     let mut window: PistonWindow =

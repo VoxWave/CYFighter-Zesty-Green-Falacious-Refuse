@@ -1,11 +1,10 @@
 [package]
 name = "CYFighter-Zesty-Green-Falacious-Refuse"
 version = "0.1.0"
-authors = ["Your Name <victor_bankowski@hotmail.com>"]
+authors = ["Victor \"VoxWave\" Bankowski <victor_bankowski@hotmail.com>"]
 
 [dependencies]
 piston_window = "0.80"
-zesty-backend = { path = "zesty-backend"}
-
-[workspace]
-members = ["zesty-backend"]
+nalgebra = "0.16.4"
+specs = "0.12.3"
+specs-derive = "0.2.0"
