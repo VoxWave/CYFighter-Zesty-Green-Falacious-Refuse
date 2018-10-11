@@ -1,16 +1,23 @@
 extern crate nalgebra as na;
 extern crate piston_window;
+extern crate shrev;
 extern crate specs;
 #[macro_use]
 extern crate specs_derive;
 
-use physics::{PhysicsSystem, Position, Velocity};
 use piston_window::*;
+
+use shrev::EventChannel;
+
 use specs::prelude::*;
 use specs::{Builder, DispatcherBuilder, World};
 
+use physics::{PhysicsSystem, Position, Velocity};
+use input::InputEvent;
+
 type Vector2 = na::Vector2<f64>;
 
+mod input;
 mod physics;
 
 fn main() {
@@ -32,6 +39,8 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
+
+    let mut input_channel = EventChannel::<InputEvent>::new();
 
     while let Some(event) = window.next() {
         dispatcher.dispatch(&mut world.res);
