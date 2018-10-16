@@ -5,6 +5,8 @@ extern crate specs;
 #[macro_use]
 extern crate specs_derive;
 
+use std::sync::mpsc::channel;
+
 use piston_window::*;
 
 use shrev::EventChannel;
@@ -13,7 +15,7 @@ use specs::prelude::*;
 use specs::{Builder, DispatcherBuilder, World};
 
 use physics::{PhysicsSystem, Position, Velocity};
-use input::InputEvent;
+use input::{InputSystem, InputEvent, P1ControlChannel, P2ControlChannel};
 
 type Vector2 = na::Vector2<f64>;
 
@@ -25,8 +27,11 @@ fn main() {
     world.register::<Position>();
     world.register::<Velocity>();
 
+    let (input_sender, input_receiver) = channel::<Input>();
+
     let mut dispatcher = DispatcherBuilder::new()
         .with(PhysicsSystem, "physics_system", &[])
+        .with(InputSystem::new(input_receiver), "input_system", &[])
         .build();
 
     let p1 = world
@@ -40,7 +45,9 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut input_channel = EventChannel::<InputEvent>::new();
+
+    let mut p1_input = P1InputChannel(EventChannel::new());
+    let mut p2_input = P2InputChannel(EventChannel::new());
 
     while let Some(event) = window.next() {
         dispatcher.dispatch(&mut world.res);
