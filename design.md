@@ -1,8 +1,8 @@
-This purpose of this document is to communicate to the reader the architectural and game design decisions of the game that have been made and those that are planned for the future. Additionaly it should make clear the principles behind those choices.
+This file tries to document the various design choices and the reasoning behind them. If there's something unclear about the design of the game and its code and this file did not help to clarify it, please create an issue for it.
 
 Game Design
 ===========
-
+The game is going to be an 2d anime fighting game. This means that to players that have played games such as melty blood, guilty gear, blazblue or under night in-birth the game should have a familiar feel to it.
 
 Architecture
 ============
