@@ -10,9 +10,12 @@ The condenced goal of the game is to be "The Ultimate Customizable Poverty Anime
 
 ### Ultimate
 
-The game is the best of its kind. Its what everyone goes to when they want to play a customizable poverty anime fighter. Doesn't hurt to have ambition.
+The game should be the best of its kind. Its what everyone goes to when they want to play a customizable poverty anime fighter. Doesn't hurt to have ambition. How this will be achieved is just that extra care will be put to achieve the other goals.
 
 ### Poverty
+
+The game should be accessible to people of all kinds of monetary situations. That goal is already partially achieved since the code is available openly under MIT licence. I considered a GPL licence since that would keep all modifications free(libre) but a GPL licence would probably make an already unlikely console version even harder and that would interfere with the poverty goal and the ultimate goal.    
+Even if the game is available for free it still might not be accessible if it only runs on high-end hardware. Therefore the game should be able to run on a wide range of hardware.
 
 ### Customizable
 
