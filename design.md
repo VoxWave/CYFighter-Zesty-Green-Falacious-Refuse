@@ -23,15 +23,20 @@ It's a 2d anime fighting game. This means that to players that have played games
 Game Design
 ===========
 
+5 buttons and directional input.
+
 Architecture
 ============
 
 ## ECS
 
-Entity-Component-System(ECS) is a design pattern meant for games and other types of entity based simulations. We chosen to use it because it's well suited for video games and data driven design.    
+Entity-Component-System(ECS) is a design pattern meant for games and other types of entity based simulations. We have chosen to use it because it's well suited for video games and data driven design.    
 The game is coded using the Specs Parallel ECS library. Specs was chosen because it's a well maintained and makes parallelisation fairly easy.
 
 ## Characters
-The characters are the meat of fighting games as they are entities who do the fighting. Because we want the game to be easily customizable, characters should be decoupled from the engine code. This means that we want to treat characters as asset packages.
+The characters are the meat of fighting games as they are entities who do the fighting. Because we want the game to be easily customizable, characters should be decoupled from the engine code. This means that we want to treat characters as asset packages which contain the sprites and sound effects needed for the character as well as files that define the characters behavior.    
+Character behaviour could be implemented with a scripting language such as lua or one of the new ones written with rust in mind. The benefit of a scripting language is the versatility. Very complex things can be described with them and adding functionality that the engine does not support directly.    
+That's also a down-side. People scripting possibly malicious things that should not be happening in a fighting game is definitely a threat. The fact that they are so versatile also mean that they're complex. Sure for programmers scripting languages are not a problem but people who are less programming oriented could benefit from a more restricted way of describing character behaviour. Having a toolset that contains only the things that are relevant to making a character would make things much simpler to internalize as there's nothing extra to distract you.    
 
-## Input
+
+## Input parsing
