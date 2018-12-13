@@ -31,12 +31,15 @@ Architecture
 ## ECS
 
 Entity-Component-System(ECS) is a design pattern meant for games and other types of entity based simulations. We have chosen to use it because it's well suited for video games and data driven design.    
-The game is coded using the Specs Parallel ECS library. Specs was chosen because it's a well maintained and makes parallelisation fairly easy.
+The game is coded using the Specs Parallel ECS library. Specs was chosen because it's a well maintained and makes parallelization fairly easy.
 
 ## Characters
 The characters are the meat of fighting games as they are entities who do the fighting. Because we want the game to be easily customizable, characters should be decoupled from the engine code. This means that we want to treat characters as asset packages which contain the sprites and sound effects needed for the character as well as files that define the characters behavior.    
 Character behaviour could be implemented with a scripting language such as lua or one of the new ones written with rust in mind. The benefit of a scripting language is the versatility. Very complex things can be described with them and adding functionality that the engine does not support directly.    
 That's also a down-side. People scripting possibly malicious things that should not be happening in a fighting game is definitely a threat. The fact that they are so versatile also mean that they're complex. Sure for programmers scripting languages are not a problem but people who are less programming oriented could benefit from a more restricted way of describing character behaviour. Having a toolset that contains only the things that are relevant to making a character would make things much simpler to internalize as there's nothing extra to distract you.    
+The other option to using a general purpose scripting language is creating and using a DSL(Domain Specific Language). A DSL would address most of the negatives of a scripting language.    
+Malicious code is a lesser threat as the functionality of the language would limited to the things that are needed in creating a fighting game character. An attacker would a much more limited toolset. It is possible that the DSL wouldn't even be turing complete which would further limit attack possibilities.    
+
 
 
 ## Input parsing
