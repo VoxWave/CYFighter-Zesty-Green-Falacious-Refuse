@@ -47,4 +47,4 @@ Malicious code is a lesser threat as the functionality of the language would lim
 
 ## Input parsing
 
-I am going to move the input parsing text here later but for the purposes of a course I will write the plans in a separate [file]{./input.md}
+I am going to move the input parsing text here later but for the purposes of a course I will write the plans in a separate [file](input.md)
