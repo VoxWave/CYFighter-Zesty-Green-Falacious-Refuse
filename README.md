@@ -1,4 +1,2 @@
 # CYFighter-Zesty-Green-Falacious-Refu-se-
-CHOOOOOSE YOUR FIGHTEEEEEEEER!!!!!!!!!!!!!!!!
-
-delet this ^
+CHOOOOOSE YOUR FIGHTEEEEEEEER!!!!!!!!!!!!!!!
