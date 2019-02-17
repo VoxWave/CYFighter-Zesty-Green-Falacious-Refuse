@@ -12,7 +12,11 @@ Zesty Green (the that will be built on this engine) will use five buttons which 
 
 Once the raw inputs are mapped into the logical inputs, then those inputs will then make the characters do actions somehow. In a lot of game genres inputs corresponds directly to actions. For example in a typical first-person shooters mouse movement corresponds to camera movements, left mouse button corresponds to shooting and the scroll wheel changes your weapon.
 
-In fighting games inputs are a little bit more complicated. Pressing attack buttons in isolation do cause the character to do a move but in addition to that certain input combinations before a button press will result in a different attack.
+In fighting games inputs are a little bit more complicated. Pressing attack buttons in isolation do cause the character to do a move but in addition to that certain input combinations before a button press will result in a different attack. This type of attack is usually called a command For example in Street Fighter when playing as Ryu if a player inputs 236 (quarter-circle motion from down to forward) and then presses one of the punch buttons the character will fire a fireball attack called hadouken instead of just punching.
+
+One very interesting input in terms of parsing is the TK input. a TK is an 
+
+
 
 
 -internal buttons somehow cause character to do moves.
