@@ -1,69 +1,45 @@
-extern crate nalgebra as na;
-extern crate piston_window;
-extern crate shrev;
-extern crate specs;
-#[macro_use]
-extern crate specs_derive;
+extern crate amethyst;
 
-use std::sync::mpsc::channel;
+use amethyst::{
+    input::InputBundle,
+    prelude::*,
+    renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage},
+    utils::application_root_dir,
+};
 
-use piston_window::*;
+use crate::game::Game;
 
-use shrev::EventChannel;
+mod game;
 
-use specs::prelude::*;
-use specs::{Builder, DispatcherBuilder, World};
+fn main() -> amethyst::Result<()> {
+    amethyst::start_logger(Default::default());
 
-use physics::{PhysicsSystem, Position, Velocity};
-use input::{InputSystem, InputEvent, P1ControlChannel, P2ControlChannel};
+    let display_path = format!(
+        "{}/resources/display_config.ron",
+        application_root_dir()
+    );
+    let config = DisplayConfig::load(&display_path);
 
-type Vector2 = na::Vector2<f64>;
+    let pipe = Pipeline::build().with_stage(
+        Stage::with_backbuffer()
+            .clear_target([0., 0., 0., 1.0], 1.0)
+            .with_pass(DrawFlat::<PosNormTex>::new()),
+    );
 
-mod input;
-mod physics;
+    let binding_path = format!(
+        "{}/resources/bindings_config.ron",
+        application_root_dir()
+    );
 
-fn main() {
-    let mut world = World::new();
-    world.register::<Position>();
-    world.register::<Velocity>();
+    let input_bundle = InputBundle::<String, String>::new()
+        .with_bindings_from_file(binding_path)?;
 
-    let (input_sender, input_receiver) = channel::<Input>();
+    let game_data = GameDataBuilder::default()
+        .with_bundle(RenderBundle::new(pipe, Some(config)))?;
+        .with_bundle(input_bundle)?;
+    let mut game = Application::new("./", Game, game_data)?;
 
-    let mut dispatcher = DispatcherBuilder::new()
-        .with(PhysicsSystem, "physics_system", &[])
-        .with(InputSystem::new(input_receiver), "input_system", &[])
-        .build();
+    game.run();
 
-    let p1 = world
-        .create_entity()
-        .with(Position(Vector2::new(0.0, 0.0)))
-        .with(Velocity(Vector2::new(0.5, 0.0)))
-        .build();
-
-    let mut window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
-
-
-    let mut p1_input = P1InputChannel(EventChannel::new());
-    let mut p2_input = P2InputChannel(EventChannel::new());
-
-    while let Some(event) = window.next() {
-        dispatcher.dispatch(&mut world.res);
-        world.maintain();
-        world.exec(|(positions,): (ReadStorage<Position>,)| {
-            (&positions).join().for_each(|pos| {
-                window.draw_2d(&event, |context, graphics| {
-                    clear([1.0; 4], graphics);
-                    rectangle(
-                        [1.0, 0.0, 0.0, 1.0], // red
-                        [pos.0.x, pos.0.y, 100.0, 100.0],
-                        context.transform,
-                        graphics,
-                    );
-                });
-            });
-        });
-    }
+    Ok(())
 }
