@@ -21,7 +21,7 @@ mod fight_stick;
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
-    let display_path = format!("{}/resources/display_config.ron", application_root_dir());
+    let display_path = format!("{}/assets/configs/display_config.ron", application_root_dir());
     let config = DisplayConfig::load(&display_path);
 
     let pipe = Pipeline::build()
@@ -31,7 +31,7 @@ fn main() -> amethyst::Result<()> {
             .with_pass(DrawFlat2D::new()),
     );
 
-    let binding_path = format!("{}/resources/binding_config.ron", application_root_dir());
+    let binding_path = format!("{}/assets/configs/binding_config.ron", application_root_dir());
 
     let input_bundle =
         InputBundle::<String, String>::new().with_bindings_from_file(binding_path)?;

@@ -7,7 +7,7 @@ use amethyst::renderer::{
     SpriteSheetFormat, SpriteSheetHandle, Texture, TextureMetadata,
 };
 
-use crate::fight_stick
+use crate::fight_stick::{Stick, StickState, Button, ButtonType};
 
 pub const VIEW_HEIGHT: f32 = 100.0;
 pub const VIEW_WIDTH: f32 = 200.0;
@@ -46,9 +46,52 @@ fn initialize_stick_and_buttons(world: &mut World) {
     d_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*4., y, 0.);
     e_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*5., y, 0.);
 
+    create_stick_entity(world, StickState::Neutral, stick_transform);
+
+    create_button_entity(world, ButtonType::A, a_transform);
+    create_button_entity(world, ButtonType::B, b_transform);
+    create_button_entity(world, ButtonType::C, c_transform);
+    create_button_entity(world, ButtonType::D, d_transform);
+    create_button_entity(world, ButtonType::E, e_transform);
+}
+
+fn create_button_entity(world: &mut World, button_type: ButtonType, transform: Transform) {
     world
         .create_entity()
-        .with(Stick(StickState::Neutral))
+        .with(Button(button_type, false))
+        .with(transform)
+        .build();
+}
+
+fn create_stick_entity(world: &mut World, state: StickState, transform: Transform) {
+    world
+        .create_entity()
+        .with(Stick(state))
+        .with(transform)
+        .build();
+}
+
+fn load_sprite_sheet(world: &mut World) -> SpriteSheetHandle {
+    let texture_handle = {
+        let loader = world.read_resource::<Loader>();
+        let texture_storage = world.read_resource::<AssetStorage<Texture>>();
+        loader.load(
+            "assets/textures/stickball.png",
+            PngFormat,
+            TextureMetadata::srgb_scale(),
+            (),
+            &texture_storage,
+        )
+    };
+    let loader = world.read_resource::<Loader>();
+    let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
+    loader.load(
+        "assets/textures/stickball_spritesheet.ron", // Here we load the associated ron file
+        SpriteSheetFormat,
+        texture_handle, // We pass it the handle of the texture we want it to use
+        (),
+        &sprite_sheet_store,
+    )
 }
 
 pub struct Game;
@@ -56,6 +99,9 @@ pub struct Game;
 impl SimpleState for Game {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+        world.register::<Button>();
+        world.register::<Stick>();
         initialize_camera(world);
+        initialize_stick_and_buttons(world);
     }
 }
