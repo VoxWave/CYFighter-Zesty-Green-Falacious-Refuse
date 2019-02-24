@@ -30,7 +30,7 @@ fn initialize_camera(world: &mut World) {
     .build();
 }
 
-fn initialize_stick_and_buttons(world: &mut World) {
+fn initialize_stick_and_buttons(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut stick_transform = Transform::default();
     let mut a_transform = Transform::default();
     let mut b_transform = Transform::default();
@@ -40,33 +40,45 @@ fn initialize_stick_and_buttons(world: &mut World) {
 
     let y = VIEW_HEIGHT/2.;
     stick_transform.set_xyz(VIEW_WIDTH/4., y, 0.);
-    a_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*1., y, 0.);
-    b_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*2., y, 0.);
-    c_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*3., y, 0.);
-    d_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*4., y, 0.);
-    e_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10.*5., y, 0.);
+    a_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 1., y, 0.);
+    b_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 2., y, 0.);
+    c_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 3., y, 0.);
+    d_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 4., y, 0.);
+    e_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 5., y, 0.);
 
-    create_stick_entity(world, StickState::Neutral, stick_transform);
+    let stick_render = SpriteRender {
+        sprite_sheet: sprite_sheet.clone(),
+        sprite_number: 0,
+    };
 
-    create_button_entity(world, ButtonType::A, a_transform);
-    create_button_entity(world, ButtonType::B, b_transform);
-    create_button_entity(world, ButtonType::C, c_transform);
-    create_button_entity(world, ButtonType::D, d_transform);
-    create_button_entity(world, ButtonType::E, e_transform);
+    create_stick_entity(world, StickState::Neutral, stick_transform, stick_render.clone());
+
+    let button_render = SpriteRender {
+        sprite_sheet: sprite_sheet.clone(),
+        sprite_number: 0,
+    };
+
+    create_button_entity(world, ButtonType::A, a_transform, button_render.clone());
+    create_button_entity(world, ButtonType::B, b_transform, button_render.clone());
+    create_button_entity(world, ButtonType::C, c_transform, button_render.clone());
+    create_button_entity(world, ButtonType::D, d_transform, button_render.clone());
+    create_button_entity(world, ButtonType::E, e_transform, button_render.clone());
 }
 
-fn create_button_entity(world: &mut World, button_type: ButtonType, transform: Transform) {
+fn create_button_entity(world: &mut World, button_type: ButtonType, transform: Transform, sprite: SpriteRender) {
     world
         .create_entity()
+        .with(sprite)
         .with(Button(button_type, false))
         .with(transform)
         .build();
 }
 
-fn create_stick_entity(world: &mut World, state: StickState, transform: Transform) {
+fn create_stick_entity(world: &mut World, state: StickState, transform: Transform, sprite: SpriteRender) {
     world
         .create_entity()
         .with(Stick(state))
+        .with(sprite)
         .with(transform)
         .build();
 }
@@ -102,6 +114,7 @@ impl SimpleState for Game {
         world.register::<Button>();
         world.register::<Stick>();
         initialize_camera(world);
-        initialize_stick_and_buttons(world);
+        let stick_sprite_handle = load_sprite_sheet(world);
+        initialize_stick_and_buttons(world, stick_sprite_handle); 
     }
 }

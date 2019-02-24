@@ -17,6 +17,7 @@ use crate::game::Game;
 
 mod game;
 mod fight_stick;
+mod parser;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
