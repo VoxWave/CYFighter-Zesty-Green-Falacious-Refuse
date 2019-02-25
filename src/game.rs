@@ -40,11 +40,18 @@ fn initialize_stick_and_buttons(world: &mut World, sprite_sheet: SpriteSheetHand
 
     let y = VIEW_HEIGHT/2.;
     stick_transform.set_xyz(VIEW_WIDTH/4., y, 0.);
-    a_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 1., y, 0.);
-    b_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 2., y, 0.);
-    c_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 3., y, 0.);
-    d_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 4., y, 0.);
-    e_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 5., y, 0.);
+    stick_transform.set_scale(0.1, 0.1, 0.1);
+
+    a_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 0., y, 0.);
+    a_transform.set_scale(0.1, 0.1, 0.1);
+    b_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 1., y, 0.);
+    b_transform.set_scale(0.1, 0.1, 0.1);
+    c_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 2., y, 0.);
+    c_transform.set_scale(0.1, 0.1, 0.1);
+    d_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 3., y, 0.);
+    d_transform.set_scale(0.1, 0.1, 0.1);
+    e_transform.set_xyz(VIEW_WIDTH/2. + VIEW_WIDTH/10. * 4., y, 0.);
+    e_transform.set_scale(0.1, 0.1, 0.1);
 
     let stick_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),

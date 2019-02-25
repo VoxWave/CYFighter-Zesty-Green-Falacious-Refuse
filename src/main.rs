@@ -9,11 +9,12 @@ use amethyst::{
     core::transform::TransformBundle,
     input::InputBundle,
     prelude::*,
-    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
+    renderer::{ColorMask, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage, ALPHA},
     utils::application_root_dir,
 };
 
 use crate::game::Game;
+use crate::fight_stick::FightStickSystem;
 
 mod game;
 mod fight_stick;
@@ -28,8 +29,8 @@ fn main() -> amethyst::Result<()> {
     let pipe = Pipeline::build()
     .with_stage(
         Stage::with_backbuffer()
-            .clear_target([0.0, 0.0, 0.0, 1.0], 1.0)
-            .with_pass(DrawFlat2D::new()),
+            .clear_target([0., 0., 0., 1.], 1.)
+            .with_pass(DrawFlat2D::new().with_transparency(ColorMask::all(), ALPHA, None)),
     );
 
     let binding_path = format!("{}/assets/configs/binding_config.ron", application_root_dir());
@@ -40,7 +41,8 @@ fn main() -> amethyst::Result<()> {
     let game_data = GameDataBuilder::default()
         .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
         .with_bundle(TransformBundle::new())?
-        .with_bundle(input_bundle)?;
+        .with_bundle(input_bundle)?
+        .with(FightStickSystem, "fight_stick_system", &["input_system"]);
     let mut game = Application::new("./", Game, game_data)?;
 
     game.run();
