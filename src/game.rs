@@ -7,7 +7,7 @@ use amethyst::renderer::{
     SpriteSheetFormat, SpriteSheetHandle, Texture, TextureMetadata,
 };
 
-use crate::fight_stick::{Stick, StickState, Button, ButtonType};
+use crate::fight_stick::{Stick, AxisPosition, Button, ButtonType};
 
 pub const VIEW_HEIGHT: f32 = 100.0;
 pub const VIEW_WIDTH: f32 = 200.0;
@@ -58,7 +58,7 @@ fn initialize_stick_and_buttons(world: &mut World, sprite_sheet: SpriteSheetHand
         sprite_number: 0,
     };
 
-    create_stick_entity(world, StickState::Neutral, stick_transform, stick_render.clone());
+    create_stick_entity(world, AxisPosition::Neutral, AxisPosition::Neutral, stick_transform, stick_render.clone());
 
     let button_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
@@ -81,10 +81,10 @@ fn create_button_entity(world: &mut World, button_type: ButtonType, transform: T
         .build();
 }
 
-fn create_stick_entity(world: &mut World, state: StickState, transform: Transform, sprite: SpriteRender) {
+fn create_stick_entity(world: &mut World, h_axis: AxisPosition, v_axis: AxisPosition, transform: Transform, sprite: SpriteRender) {
     world
         .create_entity()
-        .with(Stick(state))
+        .with(Stick(h_axis, v_axis))
         .with(sprite)
         .with(transform)
         .build();
