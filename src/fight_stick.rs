@@ -39,6 +39,44 @@ pub enum FightStickInput {
     StickPosition(Stick)
 }
 
+struct FightStick {
+    a: Button,
+    b: Button,
+    c: Button,
+    d: Button,
+    e: Button,
+    stick: Stick,
+}
+
+impl FightStick {
+    fn new() -> Self {
+        FightStick {
+            a: Button(ButtonType::A, false),
+            b: Button(ButtonType::A, false),
+            c: Button(ButtonType::A, false),
+            d: Button(ButtonType::A, false),
+            e: Button(ButtonType::A, false),
+            stick: Stick(AxisPosition::Neutral, AxisPosition::Neutral),
+        }
+    }
+}
+
+pub struct POCParseSystem {
+    stick: FightStick,
+    input_buffer: Vec<FightStickInput>,
+}
+
+impl<'s> System<'s> for POCParseSystem {
+    type SystemData = Read<'s, InputHandler<String, String>>;
+
+    fn run(&mut self, inputs: Self::SystemData) {
+        
+    }
+}
+// this system is for the visualisation of the stick and buttons.
+// it has some functionality that overlaps with POCParseSystem but
+// Refactoring it is a bit too big of an ordeal at the moment so
+// I'll leave it ugly for now.
 pub struct FightStickSystem;
 
 impl<'s> System<'s> for FightStickSystem {
