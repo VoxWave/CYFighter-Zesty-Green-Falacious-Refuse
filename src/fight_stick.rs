@@ -6,15 +6,15 @@ use amethyst::{
 
 use crate::game::{VIEW_HEIGHT, VIEW_WIDTH};
 
-#[derive(Component, PartialEq, Debug)]
+#[derive(Clone, Component, PartialEq, Debug)]
 pub struct Button(pub ButtonType, pub bool);
 
-#[derive(PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum ButtonType {
     A, B, C, D, E,
 }
 
-#[derive(Component, PartialEq, Debug)]
+#[derive(Clone, Component, PartialEq, Debug)]
 pub struct Stick(pub AxisPosition, pub AxisPosition);
 
 #[derive(Clone, Debug, PartialEq)]

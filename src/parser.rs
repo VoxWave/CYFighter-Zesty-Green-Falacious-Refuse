@@ -8,7 +8,7 @@ use nom::{AtEof, Compare, CompareResult, Slice, InputIter, named, named_args, on
 
 use crate::fight_stick::{Button, ButtonType, Stick, AxisPosition::{self, *}, FightStickInput};
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 struct InputBuffer<'a>(&'a[FightStickInput]);
 
 impl<'a> Slice<Range<usize>> for InputBuffer<'a> {
@@ -75,12 +75,16 @@ impl<'a> AtEof for InputBuffer<'a> {
 
 impl<'a> Compare<InputBuffer<'a>> for InputBuffer<'a> {
     fn compare(&self, t: InputBuffer<'a>) -> CompareResult {
-        if self == t {
-            CompareResult::
+        if self == &t {
+            CompareResult::Ok
+        } else {
+            CompareResult::Error
         }
     }
 
-    fn compare_no_case(&self, t: InputBuffer<'a>) -> CompareResult
+    fn compare_no_case(&self, t: InputBuffer<'a>) -> CompareResult {
+        self.compare(t)
+    }
 }
 
 fn convert_fsi_to_command(fsi: FightStickInput) -> Command {
@@ -95,7 +99,7 @@ fn stick_to_fsi(stick: Stick) -> FightStickInput {
 }
 
 named_args!(parse_fsi(fsi: FightStickInput)<InputBuffer, FightStickInput>,
-    tag!(&[fsi])
+    tag!(InputBuffer(&[fsi,]))
 );
 
 named!(parse_directional<InputBuffer, Command>,
