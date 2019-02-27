@@ -33,7 +33,7 @@ fn get_axis_position(scalar: f64, threshold: f64) -> AxisPosition {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum FightStickInput {
     Button(Button),
     StickPosition(Stick)

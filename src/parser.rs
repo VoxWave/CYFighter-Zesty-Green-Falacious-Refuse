@@ -1,90 +1,116 @@
+use std::{
+    slice,
+    iter::Enumerate,
+    ops::{Range, RangeFrom, RangeTo, RangeFull},
+};
+
+use nom::{AtEof, Compare, CompareResult, Slice, InputIter, named, named_args, one_of, tag};
+
 use crate::fight_stick::{Button, ButtonType, Stick, AxisPosition::{self, *}, FightStickInput};
 
-type InputBuffer<'a> = &'a[FightStickInput];
+#[derive(Clone)]
+struct InputBuffer<'a>(&'a[FightStickInput]);
 
-type ParseResult<'a, T> = Result<(T, InputBuffer<'a>), ()>;
+impl<'a> Slice<Range<usize>> for InputBuffer<'a> {
+    fn slice(&self, range: Range<usize>) -> Self {
+        InputBuffer(&self.0[range])
+    }
+}
 
-fn parse_button(input: InputBuffer, wanted: Button) -> ParseResult<Button> {
-    if let Some(FightStickInput::Button(button)) = input.last() {
-        if *button == wanted {
-            return Ok((wanted, &input[0..input.len()-1]))
+impl<'a> Slice<RangeTo<usize>> for InputBuffer<'a> {
+    fn slice(&self, range: RangeTo<usize>) -> Self {
+        self.slice(0..range.end)
+    }
+}
+
+impl<'a> Slice<RangeFrom<usize>> for InputBuffer<'a> {
+    fn slice(&self, range: RangeFrom<usize>) -> Self {
+        self.slice(range.start..self.0.len())
+    }
+}
+
+impl<'a> Slice<RangeFull> for InputBuffer<'a> {
+    fn slice(&self, range: RangeFull) -> Self {
+        self.clone()
+    }
+}
+
+impl<'a> InputIter for InputBuffer<'a> {
+    type Item = &'a FightStickInput;
+    type RawItem = FightStickInput;
+    type Iter = Enumerate<slice::Iter<'a, FightStickInput>>;
+    type IterElem = slice::Iter<'a, FightStickInput>;
+
+    #[inline]
+    fn iter_indices(&self) -> Self::Iter {
+        self.0.iter().enumerate()
+    }
+    #[inline]
+    fn iter_elements(&self) -> Self::IterElem {
+        self.0.iter()
+    }
+    #[inline]
+    fn position<P>(&self, predicate: P) -> Option<usize>
+    where
+        P: Fn(Self::RawItem) -> bool,
+    {
+        self.0.iter().position(|b| predicate(b.clone()))
+    }
+
+    #[inline]
+    fn slice_index(&self, count: usize) -> Option<usize> {
+        if count <= self.0.len() {
+            Some(count)
+        } else {
+            None
         }
     }
-    Err(())
 }
 
-#[test]
-fn button_press_is_parsed() {
-    let buffer = [
-        FightStickInput::StickPosition(Stick(Positive, Neutral)), 
-        FightStickInput::Button(Button(ButtonType::A, true)),
-    ];
-    let result = parse_button(&buffer, Button(ButtonType::A, true));
-    match result {
-        Ok((Button(ButtonType::A, true), &[FightStickInput::StickPosition(Stick(Positive, Neutral))])) => {},
-        _ => panic!("parsing didn't work. {:?} was parsed instead of the A button press", result),
+impl<'a> AtEof for InputBuffer<'a> {
+    fn at_eof(&self) -> bool {
+        true
     }
 }
 
-#[test]
-fn wrong_input_is_not_parsed_as_button_press() {
-    let buffer = [
-        FightStickInput::Button(Button(ButtonType::A, true)),
-        FightStickInput::StickPosition(Stick(Positive, Neutral)), 
-    ];
-    let result = parse_button(&buffer, Button(ButtonType::A, true));
-    match result {
-        Ok(wrong) => panic!("{:?} was parsed even though parsing was supposed to fail", wrong),
-        Err(()) => {},
-    }
-}
-
-fn parse_direction(input: InputBuffer, wanted: Stick) -> ParseResult<Stick> {
-    if let Some(FightStickInput::StickPosition(stick)) = input.last() {
-        if *stick == wanted {
-            return Ok((wanted, &input[0..input.len()-1]))
+impl<'a> Compare<InputBuffer<'a>> for InputBuffer<'a> {
+    fn compare(&self, t: InputBuffer<'a>) -> CompareResult {
+        if self == t {
+            CompareResult::
         }
     }
-    Err(())
+
+    fn compare_no_case(&self, t: InputBuffer<'a>) -> CompareResult
 }
 
-#[test]
-fn right_stick_input_is_parsed() {
-    let buffer = [
-        FightStickInput::Button(Button(ButtonType::A, true)),
-        FightStickInput::StickPosition(Stick(Positive, Neutral)), 
-    ];
-    let result = parse_direction(&buffer, Stick(Positive, Neutral));
-    match result {
-        Ok((Stick(Positive, Neutral), &[FightStickInput::Button(Button(ButtonType::A, true))])) => {},
-        _ => panic!("parsing didn't work expect a stick input towards the right but {:?} was the result instead.", result),
+fn convert_fsi_to_command(fsi: FightStickInput) -> Command {
+    match fsi {
+        FightStickInput::Button(b) => Command::Button(b),
+        FightStickInput::StickPosition(s) => Command::Direction(s.0, s.1),
     }
 }
 
-#[test]
-fn wrong_input_is_not_parsed_as_stick_input() {
-    let buffer = [
-        FightStickInput::StickPosition(Stick(Positive, Neutral)), 
-        FightStickInput::Button(Button(ButtonType::A, true)),
-    ];
-    let result = parse_direction(&buffer, Stick(Positive, Neutral));
-    match result {
-        Ok(wrong) => panic!("{:?} was parsed even though parsing was supposed to fail", wrong),
-        _ => {},
-    }
+fn stick_to_fsi(stick: Stick) -> FightStickInput {
+    FightStickInput::StickPosition(stick)
 }
 
-macro_rules! sequence {
-    () => {
-        
-    };
-}
+named_args!(parse_fsi(fsi: FightStickInput)<InputBuffer, FightStickInput>,
+    tag!(&[fsi])
+);
 
-macro_rules! choice {
-    () => {
-        
-    };
-}
+named!(parse_directional<InputBuffer, Command>,
+    one_of!(&[
+        stick_to_fsi(Stick(Positive, Positive)), 
+        stick_to_fsi(Stick(Positive, Neutral)),
+        stick_to_fsi(Stick(Positive, Negative)),
+        stick_to_fsi(Stick(Neutral, Positive)),
+        stick_to_fsi(Stick(Neutral, Neutral)),
+        stick_to_fsi(Stick(Neutral, Negative)),
+        stick_to_fsi(Stick(Negative, Positive)),
+        stick_to_fsi(Stick(Negative, Neutral)),
+        stick_to_fsi(Stick(Negative, Negative)),
+    ][..])
+);
 
 enum Command {
     QuaterCircle(ButtonType, Facing),
