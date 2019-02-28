@@ -28,3 +28,5 @@ One very interesting input in terms of parsing is the TK input. a TK is an
 -parser combinator approach
 
 -possible difficulties and differences depending on the character implementation.
+
+https://docs.google.com/presentation/d/18Vga-c_Ak2Olnmbm5X67NpRO8BEgsIzR708ovZbkMak/edit#slide=id.g50a1b5d8b6_0_59
