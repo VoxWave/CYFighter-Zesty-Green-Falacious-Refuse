@@ -4,7 +4,10 @@ use amethyst::{
     input::InputHandler,
 };
 
-use crate::game::{VIEW_HEIGHT, VIEW_WIDTH};
+use crate::{
+    game::{VIEW_HEIGHT, VIEW_WIDTH},
+    parser::{Command, InputBuffer, parse_button, parse_directional, parse_236_button},
+};
 
 #[derive(Clone, Component, PartialEq, Debug)]
 pub struct Button(pub ButtonType, pub bool);
@@ -61,6 +64,19 @@ impl FightStick {
     }
 }
 
+fn parse(input: InputBuffer) -> Option<Command> {
+    match (
+        parse_directional(input), 
+        parse_236_button(input),
+        parse_button(input),
+    ) {
+        (Some(command), _ , _) => Some(command),
+        (_, Some(command), _) => Some(command),
+        (_, _, Some(command)) => Some(command),
+        _ => None,
+    }
+}
+
 pub struct POCParseSystem {
     stick: FightStick,
     input_buffer: Vec<FightStickInput>,
@@ -70,7 +86,22 @@ impl<'s> System<'s> for POCParseSystem {
     type SystemData = Read<'s, InputHandler<String, String>>;
 
     fn run(&mut self, inputs: Self::SystemData) {
-        
+        let p1_up_down = inputs.axis_value("p1_up_down").unwrap();
+        let p1_left_right = inputs.axis_value("p1_left_right").unwrap();
+        let p1_a_button = inputs.action_is_down("A").unwrap();
+        let h_axis = get_axis_position(p1_left_right, 0.5);
+        let v_axis = get_axis_position(p1_up_down, 0.5);
+        let mut parsed_commands = Vec::new();
+        if self.stick.stick.0 != h_axis || self.stick.stick.1 != v_axis {
+            self.stick.stick = Stick(h_axis, v_axis);
+            self.input_buffer.push(FightStickInput::StickPosition(Stick(h_axis, v_axis)));
+            parsed_commands.push(parse(&self.input_buffer));
+        }
+        if self.stick.a.1 != p1_a_button {
+            self.stick.a = Button(self.stick.a.0, p1_a_button);
+            self.input_buffer.push(FightStickInput::Button(Button(self.stick.a.0, p1_a_button)));
+            parsed_commands.push(&self.input_buffer);
+        }
     }
 }
 // this system is for the visualisation of the stick and buttons.
@@ -92,14 +123,14 @@ impl<'s> System<'s> for FightStickSystem {
         let p1_up_down = inputs.axis_value("p1_up_down").unwrap();
         let p1_left_right = inputs.axis_value("p1_left_right").unwrap();
         let the_A_button = inputs.action_is_down("A").unwrap();
-        println!("{:?}, {:?}", p1_up_down, p1_left_right);
+        // println!("{:?}, {:?}", p1_up_down, p1_left_right);
 
         let h_axis = get_axis_position(p1_left_right, 0.5);
         let v_axis = get_axis_position(p1_up_down, 0.5);
         (&mut transforms, &mut sticks).join().for_each(|(mut transform, stick)| {
             stick.0 = h_axis.clone();
             stick.1 = v_axis.clone();
-            println!("{:?}", stick.0);
+            // println!("{:?}", stick.0);
             let transform_x = match h_axis {
                 Positive => 10., 
                 Neutral => 0.,

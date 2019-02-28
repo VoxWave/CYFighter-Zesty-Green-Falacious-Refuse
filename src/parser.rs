@@ -2,7 +2,8 @@ use crate::fight_stick::{Button, ButtonType, Stick, AxisPosition::{self, *}, Fig
 
 type InputBuffer<'a> = &'a[FightStickInput];
 
-enum Command {
+#[derive(Debug, Clone)]
+pub enum Command {
     QuaterCircle(ButtonType, Facing),
     DP(ButtonType, Facing),
     HalfCircle(ButtonType, Facing),
@@ -10,11 +11,12 @@ enum Command {
     Button(Button),
 }
 
-enum Facing {
+#[derive(Debug, Clone)]
+pub enum Facing {
     Left, Right,
 }
 
-fn parse_button(input: InputBuffer) -> Option<Command> {
+pub fn parse_button(input: InputBuffer) -> Option<Command> {
     if let Some(FightStickInput::Button(button)) = input.last() {
         Some(Command::Button(button.clone()))
     } else {
@@ -22,7 +24,7 @@ fn parse_button(input: InputBuffer) -> Option<Command> {
     }
 }
 
-fn parse_directional(input: InputBuffer) -> Option<Command> {
+pub fn parse_directional(input: InputBuffer) -> Option<Command> {
     if let Some(FightStickInput::StickPosition(stick)) = input.last() {
         Some(Command::Direction(stick.0.clone(), stick.1.clone()))
     } else {
@@ -30,7 +32,7 @@ fn parse_directional(input: InputBuffer) -> Option<Command> {
     }
 }
 
-fn parse_236_button(input: InputBuffer) -> Option<Command> {
+pub fn parse_236_button(input: InputBuffer) -> Option<Command> {
     if let Some(FightStickInput::Button(Button(button_type, true))) = input.last() {
         if let Some(facing) = find_236_or_214(&input[0..input.len()-1]) {
             Some(Command::QuaterCircle(button_type.clone(), facing))
