@@ -42,17 +42,17 @@ pub enum FightStickInput {
     StickPosition(Stick)
 }
 
-struct FightStick {
-    a: Button,
-    b: Button,
-    c: Button,
-    d: Button,
-    e: Button,
-    stick: Stick,
+pub struct FightStick {
+    pub a: Button,
+    pub b: Button,
+    pub c: Button,
+    pub d: Button,
+    pub e: Button,
+    pub stick: Stick,
 }
 
 impl FightStick {
-    fn new() -> Self {
+    pub fn new() -> Self {
         FightStick {
             a: Button(ButtonType::A, false),
             b: Button(ButtonType::A, false),
@@ -78,8 +78,8 @@ fn parse(input: InputBuffer) -> Option<Command> {
 }
 
 pub struct POCParseSystem {
-    stick: FightStick,
-    input_buffer: Vec<FightStickInput>,
+    pub stick: FightStick,
+    pub input_buffer: Vec<FightStickInput>,
 }
 
 impl<'s> System<'s> for POCParseSystem {
@@ -91,16 +91,24 @@ impl<'s> System<'s> for POCParseSystem {
         let p1_a_button = inputs.action_is_down("A").unwrap();
         let h_axis = get_axis_position(p1_left_right, 0.5);
         let v_axis = get_axis_position(p1_up_down, 0.5);
+
         let mut parsed_commands = Vec::new();
         if self.stick.stick.0 != h_axis || self.stick.stick.1 != v_axis {
-            self.stick.stick = Stick(h_axis, v_axis);
+            self.stick.stick = Stick(h_axis.clone(), v_axis.clone());
             self.input_buffer.push(FightStickInput::StickPosition(Stick(h_axis, v_axis)));
             parsed_commands.push(parse(&self.input_buffer));
         }
         if self.stick.a.1 != p1_a_button {
-            self.stick.a = Button(self.stick.a.0, p1_a_button);
-            self.input_buffer.push(FightStickInput::Button(Button(self.stick.a.0, p1_a_button)));
-            parsed_commands.push(&self.input_buffer);
+            self.stick.a = Button(self.stick.a.0.clone(), p1_a_button);
+            self.input_buffer.push(FightStickInput::Button(Button(self.stick.a.0.clone(), p1_a_button)));
+            parsed_commands.push(parse(&self.input_buffer));
+        }
+
+        for opt_cmd in parsed_commands {
+            match opt_cmd {
+                Some(command) => println!("{:?}", command),
+                None => {}, 
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ use amethyst::{
 };
 
 use crate::game::Game;
-use crate::fight_stick::FightStickSystem;
+use crate::fight_stick::{FightStickSystem, POCParseSystem, FightStick};
 
 mod game;
 mod fight_stick;
@@ -42,6 +42,10 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?
+        .with(POCParseSystem{
+            stick: FightStick::new(),
+            input_buffer: Vec::new(),
+        }, "parse_system", &["input_system"])
         .with(FightStickSystem, "fight_stick_system", &["input_system"]);
     let mut game = Application::new("./", Game, game_data)?;
 

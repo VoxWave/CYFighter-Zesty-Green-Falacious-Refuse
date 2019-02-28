@@ -1,6 +1,6 @@
 use crate::fight_stick::{Button, ButtonType, Stick, AxisPosition::{self, *}, FightStickInput};
 
-type InputBuffer<'a> = &'a[FightStickInput];
+pub type InputBuffer<'a> = &'a[FightStickInput];
 
 #[derive(Debug, Clone)]
 pub enum Command {
