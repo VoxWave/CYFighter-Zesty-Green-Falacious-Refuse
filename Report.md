@@ -65,4 +65,4 @@ It was mentioned earlier that a character developer could implement their own pa
 
 The design is not implemented in its full form yet because of time constraints and the fact that the whole game is not implemented yet. However the most important parts of it are ready enough in this proof of concept that I can comment on the effectiveness of the design. This POC program does not have any gameplay. Instead it (crudely) visualizes a fightstick. It also parses commands which can be seen in the console output. Currently only the directional input and one button are in use and the supported commands are the hadouken, button and direction commands.
 
-The relevant files to look into in terms of input architecture are [fight_stick.rs](src/fight_stick.rs) and [parser.rs](src/parser.rs). 
+The relevant files to look into in terms of input architecture are [binding_config.ron](assets/configs/binding_config.ron), [fight_stick.rs](src/fight_stick.rs) and [parser.rs](src/parser.rs). 
