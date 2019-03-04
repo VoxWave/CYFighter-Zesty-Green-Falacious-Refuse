@@ -66,3 +66,20 @@ It was mentioned earlier that a character developer could implement their own pa
 The design is not implemented in its full form yet because of time constraints and the fact that the whole game is not implemented yet. However the most important parts of it are ready enough in this proof of concept that I can comment on the effectiveness of the design. This POC program does not have any gameplay. Instead it (crudely) visualizes a fightstick. It also parses commands which can be seen in the console output. Currently only the directional input and one button are in use and the supported commands are the hadouken, button and direction commands.
 
 The relevant files to look into in terms of input architecture are [binding_config.ron](assets/configs/binding_config.ron), [fight_stick.rs](src/fight_stick.rs) and [parser.rs](src/parser.rs). 
+## binding_config.ron
+
+In the binding config file there are two axes and one action defined. They are bound to keyboard inputs at the moment but they could be changed to controller inputs and it should work without any other changes. Obviously in the final version of the game the config could also be modified in in-game menus but currently the only way to change bindings is by modifying this config manually.
+
+## parser.rs
+
+The parser file as its name suggests contains the parser functions and the definition of their output [enum](https://doc.rust-lang.org/book/ch06-00-enums.html) `Command`. It also contains a type alias for the input buffer which is just a [slice](https://doc.rust-lang.org/book/ch04-03-slices.html) of `FightStickInputs`. The first three functions are the three implemented parsers. There are no test written for the parsers yet but the program does seem to output commands parsed by all of them. 
+
+The `parse_236_button` is the most interesting out of the three parsers as it parses the hadouken input. The name of the function uses [fighting game notation](http://www.dustloop.com/wiki/index.php/Notation). The function first tries to see if the newest input which is in the last index of the inputbuffer is a button press. It return a None immediately if it is not to signal failure. If a button press is detected then it will call the `find_236_or_214` function with the rest of the buffer as input. 
+
+This function looks at last three indexes (if there are three or more indexes) and tries to detect a quarter circle motion toward both right or left and outputs the direction which the motion made. If it fails to recognize a quarter circle motion but also does not detect a button input in the three input it checked it will call itself recursively using the `InputBuffer` with its last element removed as a parameter. What this effectively does is that we have a sliding window to the input history through which we are trying to detect a hadouken motion. Why a sliding window used instead of just quitting after the first failure is because of the tk input. Now if a jump directional input is between the button press and the motion this parser will still recognize a hadouken as intended.
+
+## fight_stick.rs
+
+The design mentioned that the parsers which the character uses and their priority would configured from a file. I have not implemented this dynamic functionality yet and instead implemented a static combination of the parsers in the `parse` function. While it is not dynamic it still shows how the more dynamic version of the final "combinator" would work. Since all of the parser functions will have the same type signature and they are [pure](https://en.wikipedia.org/wiki/Pure_function) it'd be easy to store the parser functions into some storage according to the configuration file and then just iterate over that storage whenever a parse is needed. Even if that turns out to be unfeasible for some reason it should still be possible configure the parsers with a big bunch of if then elses or possibly [matches](https://doc.rust-lang.org/book/ch06-02-match.html).
+
+The `POCParseSystem` fs
