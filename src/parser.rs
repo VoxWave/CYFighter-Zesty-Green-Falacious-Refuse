@@ -1,3 +1,7 @@
+use amethyst::{
+    ecs::System,
+}
+
 use crate::fight_stick::{Button, ButtonType, Stick, AxisPosition::{self, *}, FightStickInput};
 
 pub type InputBuffer<'a> = &'a[FightStickInput];
@@ -67,5 +71,30 @@ fn find_236_or_214(input: InputBuffer) -> Option<Facing> {
         }
     } else {
         None
+    }
+}
+
+fn parse(input: InputBuffer) -> Option<Command> {
+    match (
+        parse_directional(input), 
+        parse_236_button(input),
+        parse_button(input),
+    ) {
+        (Some(command), _ , _) => Some(command),
+        (_, Some(command), _) => Some(command),
+        (_, _, Some(command)) => Some(command),
+        _ => None,
+    }
+}
+
+pub struct ParserSystem {
+    pub input_buffer: Vec<FightStickInput>,
+}
+
+impl<'s> System<'s> for POCParseSystem {
+    type SystemData = ();
+
+    fn run(&mut self, _: Self::SystemData) {
+        
     }
 }

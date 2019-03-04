@@ -7,7 +7,7 @@ use amethyst::renderer::{
     SpriteSheetFormat, SpriteSheetHandle, Texture, TextureMetadata,
 };
 
-use crate::fight_stick::{Stick, AxisPosition, Button, ButtonType};
+use crate::fight_stick::{Stick, AxisPosition, Button, ButtonType, FightStick, P1FightStick, P2FightStick};
 
 pub const VIEW_HEIGHT: f32 = 100.0;
 pub const VIEW_WIDTH: f32 = 200.0;
@@ -120,6 +120,8 @@ impl SimpleState for Game {
         let world = data.world;
         world.register::<Button>();
         world.register::<Stick>();
+        world.add_resource(P1FightStick(FightStick::new()));
+        world.add_resource(P2FightStick(FightStick::new()));
         initialize_camera(world);
         let stick_sprite_handle = load_sprite_sheet(world);
         initialize_stick_and_buttons(world, stick_sprite_handle); 
