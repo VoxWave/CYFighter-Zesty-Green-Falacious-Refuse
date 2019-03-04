@@ -1,62 +1,55 @@
-extern crate nalgebra as na;
-extern crate piston_window;
-extern crate shrev;
-extern crate specs;
 #[macro_use]
 extern crate specs_derive;
 
-use piston_window::*;
+use nalgebra as na;
 
-use shrev::EventChannel;
+type Point = na::Point2<f64>;
 
-use specs::prelude::*;
-use specs::{Builder, DispatcherBuilder, World};
+use amethyst::{
+    core::transform::TransformBundle,
+    input::InputBundle,
+    prelude::*,
+    renderer::{ColorMask, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage, ALPHA},
+    utils::application_root_dir,
+};
 
-use physics::{PhysicsSystem, Position, Velocity};
-use input::InputEvent;
+use crate::game::Game;
+use crate::fight_stick::{FightStickSystem, POCParseSystem, FightStick};
 
-type Vector2 = na::Vector2<f64>;
+mod game;
+mod fight_stick;
+mod parser;
 
-mod input;
-mod physics;
+fn main() -> amethyst::Result<()> {
+    amethyst::start_logger(Default::default());
 
-fn main() {
-    let mut world = World::new();
-    world.register::<Position>();
-    world.register::<Velocity>();
+    let display_path = format!("{}/assets/configs/display_config.ron", application_root_dir());
+    let config = DisplayConfig::load(&display_path);
 
-    let mut dispatcher = DispatcherBuilder::new()
-        .with(PhysicsSystem, "physics_system", &[])
-        .build();
+    let pipe = Pipeline::build()
+    .with_stage(
+        Stage::with_backbuffer()
+            .clear_target([0., 0., 0., 1.], 1.)
+            .with_pass(DrawFlat2D::new().with_transparency(ColorMask::all(), ALPHA, None)),
+    );
 
-    let p1 = world
-        .create_entity()
-        .with(Position(Vector2::new(0.0, 0.0)))
-        .with(Velocity(Vector2::new(0.5, 0.0)))
-        .build();
+    let binding_path = format!("{}/assets/configs/binding_config.ron", application_root_dir());
 
-    let mut window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+    let input_bundle =
+        InputBundle::<String, String>::new().with_bindings_from_file(binding_path)?;
 
-    let mut input_channel = EventChannel::<InputEvent>::new();
+    let game_data = GameDataBuilder::default()
+        .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
+        .with_bundle(TransformBundle::new())?
+        .with_bundle(input_bundle)?
+        .with(POCParseSystem{
+            stick: FightStick::new(),
+            input_buffer: Vec::new(),
+        }, "parse_system", &["input_system"])
+        .with(FightStickSystem, "fight_stick_system", &["input_system"]);
+    let mut game = Application::new("./", Game, game_data)?;
 
-    while let Some(event) = window.next() {
-        dispatcher.dispatch(&mut world.res);
-        world.maintain();
-        world.exec(|(positions,): (ReadStorage<Position>,)| {
-            (&positions).join().for_each(|pos| {
-                window.draw_2d(&event, |context, graphics| {
-                    clear([1.0; 4], graphics);
-                    rectangle(
-                        [1.0, 0.0, 0.0, 1.0], // red
-                        [pos.0.x, pos.0.y, 100.0, 100.0],
-                        context.transform,
-                        graphics,
-                    );
-                });
-            });
-        });
-    }
+    game.run();
+
+    Ok(())
 }

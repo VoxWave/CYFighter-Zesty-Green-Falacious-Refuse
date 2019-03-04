@@ -1,11 +1,11 @@
 [package]
-name = "CYFighter-Zesty-Green-Falacious-Refuse"
+name = "zesty_green_falacious_refuse"
 version = "0.1.0"
-authors = ["Victor \"VoxWave\" Bankowski <victor_bankowski@hotmail.com>, Delma, Atte Haarni, Tubaias"]
+authors = []
+edition = "2018"
 
 [dependencies]
-piston_window = "0.80"
-nalgebra = "0.16"
-specs = "0.12"
-specs-derive = "0.2"
-shrev = "1.0"
+amethyst = "0.10.0"
+nalgebra = "0.17.2"
+specs-derive = "0.4.0"
+nom = "4.2.1"

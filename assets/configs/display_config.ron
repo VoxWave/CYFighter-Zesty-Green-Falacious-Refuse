@@ -1,0 +1,10 @@
+(
+  title: "Zesty Input Parsing Demo",
+  dimensions: Some((1000, 500)),
+  max_dimensions: None,
+  min_dimensions: None,
+  fullscreen: false,
+  multisampling: 0,
+  visibility: true,
+  vsync: false,
+)
